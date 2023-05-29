@@ -14,4 +14,6 @@ target_sources(OrionEngine PRIVATE
     EntityManager.cpp
     OrionEntity.cpp
     Timer.cpp
+    Utils.cpp
+    glad.c
 )

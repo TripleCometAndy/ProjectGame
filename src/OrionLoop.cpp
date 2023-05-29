@@ -6,8 +6,34 @@
 #include "Camera.h"
 #include "Wall.h"
 #include "Timer.h"
+#include "Utils.h"
+#include "IOException.h"
 
 #include <iostream>
+
+//We need to include glad before glfw
+#include <glad/glad.h> 
+#include <GLFW/glfw3.h>
+
+const char *vertexShaderSource =
+    "#version 330 core\n"
+    "layout (location = 0) in vec3 aPos;\n"
+    "layout (location = 1) in vec2 aTexCoord;\n"
+    "out vec2 TexCoord;\n"
+    "uniform mat4 transform;\n"
+    "void main()\n"
+    "{\n"
+    "    gl_Position = transform * vec4(aPos, 1.0f);\n"
+    "    TexCoord = vec2(aTexCoord.x, aTexCoord.y);\n"
+    "}\0";
+
+const char *fragmentShaderSource =
+    "#version 330 core\n"
+    "out vec4 FragColor;\n"
+    "void main()\n"
+    "{\n"
+    "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+    "}\n\0";
 
 OrionLoop::OrionLoop(Options* options, EventHandler* eventHandler) {
 	this->FPS = options->FPS;
@@ -20,6 +46,33 @@ void OrionLoop::initialize() {
 
 void OrionLoop::execute() {
     std::cout << "ENTERED LOOP" << std::endl;
+
+	gl::initializeGLFW();
+	gl::setOpenGLVersion(3, 3);
+	gl::setGLFWUseCoreProfile();
+
+	GLFWwindow * window = gl::createWindow(800, 600, "OrionEngine 3.0 Tech Demo");
+
+	if (window == nullptr) {
+        std::cout << "Failed to create GLFW window" << std::endl;
+        gl::terminate();
+        return;
+    }
+
+	gl::updateCurrentContext(window);
+
+	try {
+        gl::initializeGLAD();
+    }
+    catch (IOException &ex) {
+        gl::terminate();
+        return;
+    }
+
+	gl::setViewport(0, 0, 800, 600);
+
+	gl::setWindowResizeEvent(window);
+
 
 	int TICKS_PER_FRAME = 1000 / FPS;
 
@@ -59,22 +112,30 @@ void OrionLoop::execute() {
 	entityManager->addEntity(w4);
 	entityManager->addEntity(c);
 
-	bool quit = false;
 	int simulationTime = 0;
     Timer timer;
 
-	while (!quit) {
+	while (!gl::shouldWindowClose(window)) {
         timer.start();
         int realTime = timer.getTime();
 
         while (simulationTime < realTime) {
+			gl::processInput(window);
             simulationTime += 16;
         }
 
         int frameTicks = timer.getTicks();
 
         std::cout << "IN LOOP" << std::endl;
+
+		gl::setClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        gl::clearColorBuffer();
+
+		gl::pollEvents();
+		gl::swapBuffers(window);
 	}
+
+	gl::terminate();
 
 	int orbX = getEntityX("ORB");
 	int orbY = getEntityY("ORB");
