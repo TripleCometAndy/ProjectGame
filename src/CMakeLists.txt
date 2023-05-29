@@ -13,4 +13,5 @@ target_sources(OrionEngine PRIVATE
     CollisionMap.cpp
     EntityManager.cpp
     OrionEntity.cpp
+    Timer.cpp
 )

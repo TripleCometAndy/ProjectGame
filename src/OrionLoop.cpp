@@ -1,10 +1,11 @@
 #include "OrionLoop.h"
 #include "Background.h"
 #include "Orb.h"
-#include "../include/CollisionMap.h"
+#include "CollisionMap.h"
 #include "EntityManager.h"
 #include "Camera.h"
 #include "Wall.h"
+#include "Timer.h"
 
 #include <iostream>
 
@@ -18,6 +19,8 @@ void OrionLoop::initialize() {
 }
 
 void OrionLoop::execute() {
+    std::cout << "ENTERED LOOP" << std::endl;
+
 	int TICKS_PER_FRAME = 1000 / FPS;
 
 	bool hasController = false;
@@ -57,10 +60,20 @@ void OrionLoop::execute() {
 	entityManager->addEntity(c);
 
 	bool quit = false;
-
 	int simulationTime = 0;
+    Timer timer;
 
 	while (!quit) {
+        timer.start();
+        int realTime = timer.getTime();
+
+        while (simulationTime < realTime) {
+            simulationTime += 16;
+        }
+
+        int frameTicks = timer.getTicks();
+
+        std::cout << "IN LOOP" << std::endl;
 	}
 
 	int orbX = getEntityX("ORB");

@@ -6,3 +6,4 @@
 #include <string>
 
 Options * getOptions(std::string path);
+bool isFileEmpty(std::ifstream& pFile);

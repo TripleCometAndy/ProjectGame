@@ -9,7 +9,7 @@
 
 int main(int argc, char** argv)
 {
-    Options* options = getOptions("Options.txt");
+    Options* options = getOptions("../Options.txt");
 
     EventHandler* eventHandler;
     if (options->areEventsWrittenToFile) {
