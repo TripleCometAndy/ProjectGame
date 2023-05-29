@@ -120,6 +120,7 @@ void OrionLoop::execute() {
         int realTime = timer.getTime();
 
         while (simulationTime < realTime) {
+			gl::pollEvents();
 			gl::processInput(window);
             simulationTime += 16;
         }
@@ -131,7 +132,7 @@ void OrionLoop::execute() {
 		gl::setClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         gl::clearColorBuffer();
 
-		gl::pollEvents();
+		
 		gl::swapBuffers(window);
 	}
 
