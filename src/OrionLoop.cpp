@@ -1,10 +1,8 @@
 #include "OrionLoop.h"
-#include "Background.h"
-#include "Orb.h"
 #include "CollisionMap.h"
 #include "EntityManager.h"
 #include "Camera.h"
-#include "Wall.h"
+#include "Box.h"
 #include "Timer.h"
 #include "Utils.h"
 #include "IOException.h"
@@ -78,25 +76,8 @@ void OrionLoop::execute() {
 
 	bool hasController = false;
 
-	std::vector<std::string> backgroundPaths;
-	backgroundPaths.push_back("C:/Users/might/Downloads/background.jpg");
-
-	OrionEntity* b = new Background(&backgroundPaths);
-	
-	std::vector<std::string> orbPaths;
-	orbPaths.push_back("C:/Users/might/Downloads/orb.png");
-
-	OrionEntity* o = new Orb(700, 700, &orbPaths);
-
-	std::vector<std::string> wallPaths;
-	wallPaths.push_back("C:/Users/might/Downloads/wall.png");
-
-	OrionEntity* w = new Wall(400, 400, 40, 900, &wallPaths);
-	OrionEntity* w2 = new Wall(400, 400, 800, 40, &wallPaths);
-	OrionEntity* w3 = new Wall(1075, 400, 40, 900, &wallPaths);
-	OrionEntity* w4 = new Wall(400, 1075, 800, 40, &wallPaths);
-
 	Camera* c = new Camera();
+	Box * b = new Box();
 
 	CollisionMap* collisionMap = new CollisionMap(2000, 2000, 107);
 
@@ -104,13 +85,8 @@ void OrionLoop::execute() {
 	this->entityManager = new EntityManager(collisionMap);
 
 	//Add entities to entity manager
-	entityManager->addEntity(b);
-	entityManager->addEntity(o);
-	entityManager->addEntity(w);
-	entityManager->addEntity(w2);
-	entityManager->addEntity(w3);
-	entityManager->addEntity(w4);
 	entityManager->addEntity(c);
+	entityManager->addEntity(b);
 
 	int simulationTime = 0;
     Timer timer;
@@ -131,8 +107,6 @@ void OrionLoop::execute() {
 
 		gl::setClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         gl::clearColorBuffer();
-
-		
 		gl::swapBuffers(window);
 	}
 

@@ -9,4 +9,5 @@ public:
 
 	void handleStateChanges(std::set<InputType>* currentInputs, CollisionMap * collisionMap);
 	void enactStateChanges();
+	void show(int shaderProgram);
 };

@@ -6,9 +6,6 @@ target_sources(OrionEngine PRIVATE
     EventHandlerImpl.cpp
     OrionLoop.cpp
     EventHandler.cpp
-    Background.cpp
-    Orb.cpp
-    Wall.cpp
     Camera.cpp
     CollisionMap.cpp
     EntityManager.cpp
@@ -16,4 +13,5 @@ target_sources(OrionEngine PRIVATE
     Timer.cpp
     Utils.cpp
     glad.c
+    Box.cpp
 )

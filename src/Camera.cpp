@@ -26,3 +26,6 @@ void Camera::handleStateChanges(std::set<InputType>* currentInputs, CollisionMap
 void Camera::enactStateChanges() {
 
 }
+
+void Camera::show(int shaderProgram){
+}

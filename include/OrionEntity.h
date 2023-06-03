@@ -30,7 +30,6 @@ protected:
 public:
 	OrionEntity();
     
-	void show();
 	std::set<Hitbox *>* getHitboxes();
 	int getZIndex();
 	std::string getName();
@@ -40,4 +39,5 @@ public:
 
 	virtual void handleStateChanges(std::set<InputType>* currentInputs, CollisionMap * collisionMap) = 0;
 	virtual void enactStateChanges() = 0;
+	virtual void show(int shaderProgram) = 0;
 };

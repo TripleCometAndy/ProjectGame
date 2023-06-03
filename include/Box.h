@@ -1,12 +1,12 @@
 #pragma once
 
 #include "OrionEntity.h"
-#include "InputType.h"
 
-class Background : public OrionEntity {
+class Box : public OrionEntity {
 public:
-	Background(std::vector<std::string>* spriteSheetPaths);
+    Box();
 
 	void handleStateChanges(std::set<InputType>* currentInputs, CollisionMap * collisionMap);
 	void enactStateChanges();
+	void show(int shaderProgram);
 };

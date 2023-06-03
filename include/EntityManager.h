@@ -15,7 +15,7 @@ private:
 public:
 	EntityManager(CollisionMap * collisionMap);
 	void addEntity(OrionEntity* entity);
-	void showAll();
+	void showAll(int shaderProgram);
 	void setInputs(std::set<InputType>* events);
 	void handleStateChanges();
 	void enactStateChanges();
