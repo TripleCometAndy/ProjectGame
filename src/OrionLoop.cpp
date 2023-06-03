@@ -71,6 +71,7 @@ void OrionLoop::execute() {
 
 	Camera* c = new Camera();
 	Box * b = new Box(0, 0, 500, 500, 2000, 2000);
+	Box * b2 = new Box(600, 600, 300, 400, 2000, 2000);
 
 	CollisionMap* collisionMap = new CollisionMap(2000, 2000, 107);
 
@@ -80,6 +81,7 @@ void OrionLoop::execute() {
 	//Add entities to entity manager
 	entityManager->addEntity(c);
 	entityManager->addEntity(b);
+	entityManager->addEntity(b2);
 
 	int simulationTime = 0;
     Timer timer;
