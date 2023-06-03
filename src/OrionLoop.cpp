@@ -13,20 +13,13 @@
 #include <glad/glad.h> 
 #include <GLFW/glfw3.h>
 
-const char *vertexShaderSource =
-    "#version 330 core\n"
+const char *vertexShaderSource = "#version 330 core\n"
     "layout (location = 0) in vec3 aPos;\n"
-    "layout (location = 1) in vec2 aTexCoord;\n"
-    "out vec2 TexCoord;\n"
-    "uniform mat4 transform;\n"
     "void main()\n"
     "{\n"
-    "    gl_Position = transform * vec4(aPos, 1.0f);\n"
-    "    TexCoord = vec2(aTexCoord.x, aTexCoord.y);\n"
+    "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
     "}\0";
-
-const char *fragmentShaderSource =
-    "#version 330 core\n"
+const char *fragmentShaderSource = "#version 330 core\n"
     "out vec4 FragColor;\n"
     "void main()\n"
     "{\n"
@@ -77,7 +70,7 @@ void OrionLoop::execute() {
 	bool hasController = false;
 
 	Camera* c = new Camera();
-	Box * b = new Box(100, 100, 100, 100, 2000, 2000);
+	Box * b = new Box(0, 0, 500, 500, 2000, 2000);
 
 	CollisionMap* collisionMap = new CollisionMap(2000, 2000, 107);
 
@@ -91,23 +84,30 @@ void OrionLoop::execute() {
 	int simulationTime = 0;
     Timer timer;
 
+	unsigned int shaderProgram = gl::getShaderProgram(vertexShaderSource, fragmentShaderSource);
+
 	while (!gl::shouldWindowClose(window)) {
+		gl::processInput(window);
+		gl::setClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		gl::clearColorBuffer();
+
         timer.start();
         int realTime = timer.getTime();
 
         while (simulationTime < realTime) {
-			gl::pollEvents();
-			gl::processInput(window);
+			
+			
             simulationTime += 16;
         }
 
         int frameTicks = timer.getTicks();
 
-        std::cout << "IN LOOP" << std::endl;
-
-		gl::setClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        gl::clearColorBuffer();
+        
+		glUseProgram(shaderProgram);
+		entityManager->showAll(shaderProgram);
 		gl::swapBuffers(window);
+		gl::pollEvents();
+		
 	}
 
 	gl::terminate();
