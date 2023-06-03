@@ -11,7 +11,7 @@ EventHandlerWrite::EventHandlerWrite(std::string pathToInputs) {
     fs.open(pathToInputs.c_str(), std::ofstream::out | std::ofstream::trunc);
 }
 
-void EventHandlerWrite::handleEvents(bool* shouldQuit, EntityManager* entityManager) {
+void EventHandlerWrite::handleEvents(bool* shouldQuit, EntityManager* entityManager, GLFWwindow * window) {
     
 }
 

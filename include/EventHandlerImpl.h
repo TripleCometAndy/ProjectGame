@@ -7,5 +7,5 @@ private:
 
 public:
 	EventHandlerImpl();
-	void handleEvents(bool* shouldQuit, EntityManager* entityManager);
+	void handleEvents(bool* shouldQuit, EntityManager* entityManager, GLFWwindow * window);
 };

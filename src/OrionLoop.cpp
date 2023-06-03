@@ -92,6 +92,7 @@ void OrionLoop::execute() {
 	int simulationTime = 0;
     Timer timer;
 
+	bool quit = false;
 	unsigned int shaderProgram = gl::getShaderProgram(vertexShaderSource, fragmentShaderSource);
 
 	while (!gl::shouldWindowClose(window)) {
@@ -103,7 +104,7 @@ void OrionLoop::execute() {
         int realTime = timer.getTime();
 
         while (simulationTime < realTime) {
-			
+			eventHandler->handleEvents(&quit, entityManager, window);
 			
             simulationTime += 16;
         }

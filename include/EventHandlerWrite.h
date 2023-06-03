@@ -12,5 +12,5 @@ private:
 	void writeInputsToFile(std::set<InputType>* events);
 public:
 	EventHandlerWrite(std::string pathToInputs);
-	void handleEvents(bool* shouldQuit, EntityManager* entityManager);
+	void handleEvents(bool* shouldQuit, EntityManager* entityManager, GLFWwindow * window);
 };
