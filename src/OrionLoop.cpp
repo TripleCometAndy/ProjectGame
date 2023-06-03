@@ -77,7 +77,7 @@ void OrionLoop::execute() {
 	bool hasController = false;
 
 	Camera* c = new Camera();
-	Box * b = new Box(100, 100, 100, 100);
+	Box * b = new Box(100, 100, 100, 100, 2000, 2000);
 
 	CollisionMap* collisionMap = new CollisionMap(2000, 2000, 107);
 

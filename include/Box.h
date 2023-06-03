@@ -11,7 +11,7 @@ private:
 
 
 public:
-    Box(double x, double y, unsigned int width, unsigned int height);
+    Box(double x, double y, unsigned int width, unsigned int height, unsigned int virtualWidth, unsigned int virtualHeight);
 
 	void handleStateChanges(std::set<InputType>* currentInputs, CollisionMap * collisionMap);
 	void enactStateChanges();
