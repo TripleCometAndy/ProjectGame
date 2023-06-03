@@ -2,8 +2,6 @@
 #include "InputType.h"
 #include "CollisionMap.h"
 #include "Camera.h"
-#include "Orb.h"
-#include "Wall.h"
 #include "instanceof.h"
 
 #include <iostream>
@@ -22,7 +20,7 @@ void EntityManager::addEntity(OrionEntity* entity) {
 	collisionMap->addHitboxes(hitboxes);
 }
 
-void EntityManager::showAll() {
+void EntityManager::showAll(int shaderProgram) {
 	//Get Camera
 	Camera* camera;
 	for (OrionEntity* entity : entities) {
@@ -50,6 +48,7 @@ void EntityManager::showAll() {
 		[](OrionEntity* a, OrionEntity* b) { return a->getZIndex() < b->getZIndex(); });
 
 	for (OrionEntity* entity : sortedEntities) {
+		entity->show(shaderProgram);
 	}
 }
 

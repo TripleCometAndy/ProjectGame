@@ -11,10 +11,6 @@ OrionEntity::OrionEntity() {
 	height = 0;
 }
 
-void OrionEntity::show()
-{
-}
-
 std::set<Hitbox *>* OrionEntity::getHitboxes() {
 	std::set<Hitbox *>* copies = new std::set<Hitbox *>();
 	

@@ -1,10 +1,8 @@
 #include "OrionLoop.h"
-#include "Background.h"
-#include "Orb.h"
 #include "CollisionMap.h"
 #include "EntityManager.h"
 #include "Camera.h"
-#include "Wall.h"
+#include "Box.h"
 #include "Timer.h"
 #include "Utils.h"
 #include "IOException.h"
@@ -26,13 +24,12 @@ const char *vertexShaderSource =
     "    gl_Position = transform * vec4(aPos, 1.0f);\n"
     "    TexCoord = vec2(aTexCoord.x, aTexCoord.y);\n"
     "}\0";
-
-const char *fragmentShaderSource =
-    "#version 330 core\n"
+const char *fragmentShaderSource = "#version 330 core\n"
     "out vec4 FragColor;\n"
+	"uniform vec4 ourColor;\n"
     "void main()\n"
     "{\n"
-    "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+    "   FragColor = ourColor;\n"
     "}\n\0";
 
 OrionLoop::OrionLoop(Options* options, EventHandler* eventHandler) {
@@ -78,25 +75,9 @@ void OrionLoop::execute() {
 
 	bool hasController = false;
 
-	std::vector<std::string> backgroundPaths;
-	backgroundPaths.push_back("C:/Users/might/Downloads/background.jpg");
-
-	OrionEntity* b = new Background(&backgroundPaths);
-	
-	std::vector<std::string> orbPaths;
-	orbPaths.push_back("C:/Users/might/Downloads/orb.png");
-
-	OrionEntity* o = new Orb(700, 700, &orbPaths);
-
-	std::vector<std::string> wallPaths;
-	wallPaths.push_back("C:/Users/might/Downloads/wall.png");
-
-	OrionEntity* w = new Wall(400, 400, 40, 900, &wallPaths);
-	OrionEntity* w2 = new Wall(400, 400, 800, 40, &wallPaths);
-	OrionEntity* w3 = new Wall(1075, 400, 40, 900, &wallPaths);
-	OrionEntity* w4 = new Wall(400, 1075, 800, 40, &wallPaths);
-
 	Camera* c = new Camera();
+	Box * b = new Box(0, 0, 500, 500, 2000, 2000, 222, 72, 31);
+	Box * b2 = new Box(600, 600, 300, 400, 2000, 2000, 165, 93, 201);
 
 	CollisionMap* collisionMap = new CollisionMap(2000, 2000, 107);
 
@@ -104,36 +85,34 @@ void OrionLoop::execute() {
 	this->entityManager = new EntityManager(collisionMap);
 
 	//Add entities to entity manager
-	entityManager->addEntity(b);
-	entityManager->addEntity(o);
-	entityManager->addEntity(w);
-	entityManager->addEntity(w2);
-	entityManager->addEntity(w3);
-	entityManager->addEntity(w4);
 	entityManager->addEntity(c);
+	entityManager->addEntity(b);
+	entityManager->addEntity(b2);
 
 	int simulationTime = 0;
     Timer timer;
 
+	unsigned int shaderProgram = gl::getShaderProgram(vertexShaderSource, fragmentShaderSource);
+
 	while (!gl::shouldWindowClose(window)) {
+		gl::processInput(window);
+		gl::setClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		gl::clearColorBuffer();
+
         timer.start();
         int realTime = timer.getTime();
 
         while (simulationTime < realTime) {
-			gl::pollEvents();
-			gl::processInput(window);
+			
+			
             simulationTime += 16;
         }
 
         int frameTicks = timer.getTicks();
-
-        std::cout << "IN LOOP" << std::endl;
-
-		gl::setClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        gl::clearColorBuffer();
-
-		
+		entityManager->showAll(shaderProgram);
 		gl::swapBuffers(window);
+		gl::pollEvents();
+		
 	}
 
 	gl::terminate();

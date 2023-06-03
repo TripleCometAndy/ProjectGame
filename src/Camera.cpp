@@ -1,19 +1,19 @@
 #include "Camera.h"
 
 Camera::Camera() {
-	x = 400;
-	y = 400;
-	width = 710;
-	height = 702;
+	x = 0;
+	y = 0;
+	width = 800;
+	height = 600;
 	zIndex = -1;
 
 	name = "CAMERA";
 
 	Hitbox* hitbox = new Hitbox();
-	hitbox->x = 400;
-	hitbox->y = 400;
-	hitbox->width = 710;
-	hitbox->height = 702;
+	hitbox->x = 0;
+	hitbox->y = 0;
+	hitbox->width = 2000;
+	hitbox->height = 2000;
 	hitbox->parent = this;
 
 	hitboxes.insert(hitbox);
@@ -25,4 +25,7 @@ void Camera::handleStateChanges(std::set<InputType>* currentInputs, CollisionMap
 
 void Camera::enactStateChanges() {
 
+}
+
+void Camera::show(int shaderProgram){
 }
