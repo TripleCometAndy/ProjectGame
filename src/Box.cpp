@@ -6,11 +6,20 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-Box::Box(double x, double y, unsigned int width, unsigned int height, unsigned int virtualWidth, unsigned int virtualHeight) {
+Box::Box(double x, double y, unsigned int width, unsigned int height, unsigned int virtualWidth, unsigned int virtualHeight, int r, int g, int b) {
     this->x = x;
     this->y = y;
     this->width = width;
     this->height = height;
+
+    this->r = (1.0f/255)*r;
+    this->g = (1.0f/255)*g;
+    this->b = (1.0f/255)*b;
+
+    this->virtualWidth = virtualWidth;
+    this->virtualHeight = virtualHeight;
+
+    transform = gl::createTransformationMatrix();
 
     Hitbox * hitbox = new Hitbox();
 	hitbox->x = x;
@@ -39,17 +48,19 @@ Box::Box(double x, double y, unsigned int width, unsigned int height, unsigned i
     std::cout << "RENDER WIDTH: " << renderWidth << std::endl;
     std::cout << "RENDER HEIGHT: " << renderHeight << std::endl;
 
-    float topRightX = renderX + renderWidth;
-    float topRightY = renderY;
+    float topRightX = 0 + renderWidth;
+    float topRightY = 0;
 
-    float bottomRightX =  renderX + renderWidth;
-    float bottomRightY = renderY - renderHeight;
+    float bottomRightX =  0 + renderWidth;
+    float bottomRightY = 0 - renderHeight;
 
-    float bottomLeftX = renderX;
-    float bottomLeftY = renderY - renderHeight;
+    float bottomLeftX = 0;
+    float bottomLeftY = 0 - renderHeight;
 
-    float topLeftX = renderX;
-    float topLeftY = renderY;
+    float topLeftX = 0;
+    float topLeftY = 0;
+
+    transform = gl::translate(transform, renderX, renderY, 0.0f);
 
     std::cout << "TOP LEFT: " << topLeftX << ", " << topLeftY << std::endl;
     std::cout << "TOP RIGHT: " << topRightX << ", " << topRightY << std::endl;
@@ -102,8 +113,11 @@ void Box::enactStateChanges() {
 }
 
 void Box::show(int shaderProgram) {
-    std::cout << "RENDER BOX" << std::endl;
-
+    unsigned int transformLoc = glGetUniformLocation(shaderProgram, "transform");
+    int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
+    glUseProgram(shaderProgram);
+    glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
+    glUniform4f(vertexColorLocation, r, g, b, 1.0f);
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }

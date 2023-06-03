@@ -13,17 +13,23 @@
 #include <glad/glad.h> 
 #include <GLFW/glfw3.h>
 
-const char *vertexShaderSource = "#version 330 core\n"
+const char *vertexShaderSource =
+    "#version 330 core\n"
     "layout (location = 0) in vec3 aPos;\n"
+    "layout (location = 1) in vec2 aTexCoord;\n"
+    "out vec2 TexCoord;\n"
+    "uniform mat4 transform;\n"
     "void main()\n"
     "{\n"
-    "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+    "    gl_Position = transform * vec4(aPos, 1.0f);\n"
+    "    TexCoord = vec2(aTexCoord.x, aTexCoord.y);\n"
     "}\0";
 const char *fragmentShaderSource = "#version 330 core\n"
     "out vec4 FragColor;\n"
+	"uniform vec4 ourColor;\n"
     "void main()\n"
     "{\n"
-    "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+    "   FragColor = ourColor;\n"
     "}\n\0";
 
 OrionLoop::OrionLoop(Options* options, EventHandler* eventHandler) {
@@ -70,8 +76,8 @@ void OrionLoop::execute() {
 	bool hasController = false;
 
 	Camera* c = new Camera();
-	Box * b = new Box(0, 0, 500, 500, 2000, 2000);
-	Box * b2 = new Box(600, 600, 300, 400, 2000, 2000);
+	Box * b = new Box(0, 0, 500, 500, 2000, 2000, 222, 72, 31);
+	Box * b2 = new Box(600, 600, 300, 400, 2000, 2000, 165, 93, 201);
 
 	CollisionMap* collisionMap = new CollisionMap(2000, 2000, 107);
 
@@ -103,9 +109,6 @@ void OrionLoop::execute() {
         }
 
         int frameTicks = timer.getTicks();
-
-        
-		glUseProgram(shaderProgram);
 		entityManager->showAll(shaderProgram);
 		gl::swapBuffers(window);
 		gl::pollEvents();
