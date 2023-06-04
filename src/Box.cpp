@@ -11,6 +11,8 @@ Box::Box(double x, double y, unsigned int width, unsigned int height, unsigned i
     this->y = y;
     this->width = width;
     this->height = height;
+    futureX = x;
+    futureY = y;
 
     this->r = (1.0f/255)*r;
     this->g = (1.0f/255)*g;
@@ -45,9 +47,6 @@ Box::Box(double x, double y, unsigned int width, unsigned int height, unsigned i
     float renderWidth = ((double)(2 * width) / (double)virtualWidth);
     float renderHeight = ((double)(2 * height) / (double)virtualHeight);
 
-    std::cout << "RENDER WIDTH: " << renderWidth << std::endl;
-    std::cout << "RENDER HEIGHT: " << renderHeight << std::endl;
-
     float topRightX = 0 + renderWidth;
     float topRightY = 0;
 
@@ -62,19 +61,12 @@ Box::Box(double x, double y, unsigned int width, unsigned int height, unsigned i
 
     transform = gl::translate(transform, renderX, renderY, 0.0f);
 
-    std::cout << "TOP LEFT: " << topLeftX << ", " << topLeftY << std::endl;
-    std::cout << "TOP RIGHT: " << topRightX << ", " << topRightY << std::endl;
-    std::cout << "BOTTOM LEFT: " << bottomLeftX << ", " << bottomLeftY << std::endl;
-    std::cout << "BOTTOM RIGHT: " << bottomRightX << ", " << bottomRightY << std::endl;
-
     float vertices[] = {
         topRightX, topRightY, 0.0f,
         bottomRightX, bottomRightY, 0.0f,
         bottomLeftX, bottomLeftY, 0.0f,
         topLeftX, topLeftY, 0.0f
     };
-
-
 
     unsigned int indices[] = {
         0, 1, 3,
@@ -92,12 +84,12 @@ Box::Box(double x, double y, unsigned int width, unsigned int height, unsigned i
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
     glEnableVertexAttribArray(0);
 
-        // note that this is allowed, the call to glVertexAttribPointer registered
+    // note that this is allowed, the call to glVertexAttribPointer registered
     // VBO as the vertex attribute's bound vertex buffer object so afterwards we
     // can safely unbind
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-        // You can unbind the VAO afterwards so other VAO calls won't accidentally
+    // You can unbind the VAO afterwards so other VAO calls won't accidentally
     // modify this VAO, but this rarely happens. Modifying other VAOs requires a
     // call to glBindVertexArray anyways so we generally don't unbind VAOs (nor
     // VBOs) when it's not directly necessary.
@@ -105,11 +97,43 @@ Box::Box(double x, double y, unsigned int width, unsigned int height, unsigned i
 }
 
 void Box::handleStateChanges(std::set<InputType>* currentInputs, CollisionMap * collisionMap) {
+	if (currentInputs->find(InputType::UP_ARROW) != currentInputs->end()) {
+		futureY += 4;
+	}
+	else if (currentInputs->find(InputType::LEFT_ARROW) != currentInputs->end()) {
+		futureX -= 4;
+	}
+	else if (currentInputs->find(InputType::RIGHT_ARROW) != currentInputs->end()) {
+		futureX += 4;
+	}
+	else if (currentInputs->find(InputType::DOWN_ARROW) != currentInputs->end()) {
+		futureY -= 4;
+	}
 
+    Hitbox* futurePosition = new Hitbox();
+	futurePosition->x = futureX;
+	futurePosition->y = futureY;
+	futurePosition->width = width;
+	futurePosition->height = height;
+	futurePosition->parent = this;
 }
 
 void Box::enactStateChanges() {
+    double differenceX = futureX - x;
+	double differenceY = futureY - y;
 
+    float differenceRenderX = (differenceX * 2) / (double)virtualWidth;
+    float differenceRenderY = (differenceY * 2) / (double)virtualHeight;
+
+    transform = gl::translate(transform, differenceRenderX, differenceRenderY, 0.0f);
+
+	x = futureX;
+	y = futureY;
+
+	for (Hitbox* hitbox : hitboxes) {
+		hitbox->x += differenceX;
+		hitbox->y += differenceY;
+	}
 }
 
 void Box::show(int shaderProgram) {

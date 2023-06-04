@@ -105,6 +105,8 @@ void OrionLoop::execute() {
 
         while (simulationTime < realTime) {
 			eventHandler->handleEvents(&quit, entityManager, window);
+			entityManager->handleStateChanges();
+			entityManager->enactStateChanges();
 			
             simulationTime += 16;
         }
