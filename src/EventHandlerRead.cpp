@@ -45,6 +45,6 @@ EventHandlerRead::EventHandlerRead(std::string pathToInputs) {
     }
 }
 
-void EventHandlerRead::handleEvents(bool* shouldQuit, EntityManager* entityManager) {
+void EventHandlerRead::handleEvents(bool* shouldQuit, EntityManager* entityManager, GLFWwindow * window) {
 
 }
