@@ -97,9 +97,32 @@ Box::Box(double x, double y, unsigned int width, unsigned int height, unsigned i
 
 void Box::handleStateChanges(std::set<InputType>* currentInputs, std::set<JoystickInput *> * joystickInputs, CollisionMap * collisionMap) {
     //Find joystick 1 and then break
-    for (JoystickInput * joystickInput : *joystickInputs) {
+    double xJoy;
+    double yJoy;
+    double lengthJoy;
 
+    for (JoystickInput * joystickInput : *joystickInputs) {
+        if (joystickInput->controllerNumber == 1) {
+            xJoy = joystickInput->x;
+            yJoy = joystickInput->y;
+            lengthJoy = joystickInput->length;
+
+            if (lengthJoy >= 0.5) {
+                double normalizedX = xJoy/lengthJoy;
+                double normalizedY = yJoy/lengthJoy;
+
+                double finalX = normalizedX * 4;
+                double finalY = normalizedY * 4;
+
+                futureX += finalX;
+                futureY -= finalY;
+            }
+
+            break;
+        }
     }
+
+    
     
     if (currentInputs->find(InputType::UP_ARROW) != currentInputs->end()) {
 		futureY += 4;

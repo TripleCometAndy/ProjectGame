@@ -4,6 +4,7 @@
 
 #include <set>
 #include <iostream>
+#include <cmath>
 
 EventHandlerImpl::EventHandlerImpl() {
 }
@@ -11,13 +12,6 @@ EventHandlerImpl::EventHandlerImpl() {
 void EventHandlerImpl::handleEvents(bool* shouldQuit, EntityManager* entityManager, GLFWwindow * window) {
     std::set<InputType> * events = new std::set<InputType>();
     std::set<JoystickInput *> * joystickInputs = new std::set<JoystickInput *>();
-
-    JoystickInput * joystickInput = new JoystickInput();
-    joystickInput->angle = 45;
-    joystickInput->controllerNumber = 1;
-    joystickInput->isLeftStick = true;
-
-    joystickInputs->insert(joystickInput);
 
     if (glfwJoystickPresent(GLFW_JOYSTICK_1)) {
         //std::cout << "JOYSTICK PRESENT!" << std::endl;
@@ -30,6 +24,22 @@ void EventHandlerImpl::handleEvents(bool* shouldQuit, EntityManager* entityManag
             float axis = axes[i];
             std::cout << "AXIS " << i << " " << axis << std::endl;
         }
+
+
+        JoystickInput * joystickInput = new JoystickInput();
+        joystickInput->x = axes[0];
+        joystickInput->y = axes[1];
+
+        double xSquared = axes[0] * axes[0];
+        double ySquared = axes[1] * axes[1];
+        double length = std::sqrt(xSquared + ySquared);
+
+        joystickInput->length = length;
+        joystickInput->controllerNumber = 1;
+        joystickInput->isLeftStick = true;
+
+        joystickInputs->insert(joystickInput);
+
     }
     else {
         //std::cout << "JOYSTICK NOT PRESENT!" << std::endl;

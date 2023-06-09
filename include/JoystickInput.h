@@ -4,9 +4,9 @@ class JoystickInput {
 private:
 
 public:
-    double angle;
+    double x;
+    double y;
+    double length;
     unsigned int controllerNumber;
     bool isLeftStick;
-
-
 };
