@@ -52,13 +52,14 @@ void EntityManager::showAll(int shaderProgram) {
 	}
 }
 
-void EntityManager::setInputs(std::set<InputType>* events) {
+void EntityManager::setInputs(std::set<InputType>* events, std::set<JoystickInput *> * joystickInputs) {
 	this->currentInputs = events;
+	this->currentJoystickInputs = joystickInputs;
 }
 
 void EntityManager::handleStateChanges() {
 	for (OrionEntity* entity : entities) {
-		entity->handleStateChanges(currentInputs, collisionMap);
+		entity->handleStateChanges(currentInputs, currentJoystickInputs, collisionMap);
 	}
 }
 

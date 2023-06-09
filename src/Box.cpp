@@ -1,5 +1,4 @@
 #include "Box.h"
-
 #include "Utils.h"
 
 #include <iostream>
@@ -96,8 +95,13 @@ Box::Box(double x, double y, unsigned int width, unsigned int height, unsigned i
     glBindVertexArray(0); 
 }
 
-void Box::handleStateChanges(std::set<InputType>* currentInputs, CollisionMap * collisionMap) {
-	if (currentInputs->find(InputType::UP_ARROW) != currentInputs->end()) {
+void Box::handleStateChanges(std::set<InputType>* currentInputs, std::set<JoystickInput *> * joystickInputs, CollisionMap * collisionMap) {
+    //Find joystick 1 and then break
+    for (JoystickInput * joystickInput : *joystickInputs) {
+
+    }
+    
+    if (currentInputs->find(InputType::UP_ARROW) != currentInputs->end()) {
 		futureY += 4;
 	}
 	else if (currentInputs->find(InputType::LEFT_ARROW) != currentInputs->end()) {

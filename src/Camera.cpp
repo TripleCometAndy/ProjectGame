@@ -19,7 +19,7 @@ Camera::Camera() {
 	hitboxes.insert(hitbox);
 }
 
-void Camera::handleStateChanges(std::set<InputType>* currentInputs, CollisionMap * collisionMap) {
+void Camera::handleStateChanges(std::set<InputType>* currentInputs, std::set<JoystickInput *> * joystickInputs,  CollisionMap * collisionMap) {
 
 }
 

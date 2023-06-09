@@ -23,7 +23,7 @@ private:
 public:
     Box(double x, double y, unsigned int width, unsigned int height, unsigned int virtualWidth, unsigned int virtualHeight, int r, int g, int b);
 
-	void handleStateChanges(std::set<InputType>* currentInputs, CollisionMap * collisionMap);
+	void handleStateChanges(std::set<InputType>* currentInputs, std::set<JoystickInput *> * joystickInputs, CollisionMap * collisionMap);
 	void enactStateChanges();
 	void show(int shaderProgram);
 };
