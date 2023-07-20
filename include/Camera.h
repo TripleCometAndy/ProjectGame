@@ -7,7 +7,7 @@ class Camera : public OrionEntity {
 public:
 	Camera();
 
-	void handleStateChanges(std::set<InputType>* currentInputs, CollisionMap * collisionMap);
+	void handleStateChanges(std::set<InputType>* currentInputs, std::set<JoystickInput *> * joystickInputs, CollisionMap * collisionMap);
 	void enactStateChanges();
 	void show(int shaderProgram);
 };
