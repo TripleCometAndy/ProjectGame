@@ -28,7 +28,6 @@ int main(int argc, char** argv)
         eventHandler = new EventHandlerImpl();
     }
 
-
     OrionLoop* orionLoop = new OrionLoop(options, eventHandler);
     orionLoop->initialize();
     orionLoop->execute();

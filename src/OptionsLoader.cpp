@@ -15,9 +15,7 @@ Options* getOptions(std::string path) {
 	std::string temp;
 
 	std::getline(file, temp);
-
 	unsigned int FPS = std::stoi(temp);
-
 	options->FPS = FPS;
 
 	std::getline(file, temp);

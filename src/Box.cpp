@@ -121,8 +121,6 @@ void Box::handleStateChanges(std::set<InputType>* currentInputs, std::set<Joysti
             break;
         }
     }
-
-    
     
     if (currentInputs->find(InputType::UP_ARROW) != currentInputs->end()) {
 		futureY += 4;

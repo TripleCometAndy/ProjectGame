@@ -7,12 +7,9 @@
 
 EventHandlerRead::EventHandlerRead(std::string pathToInputs) {
     currentFrame = 0;
-
     std::ifstream myfile(pathToInputs);
-
-	//Read all the inputs into memory (as a hashmap)
-
     std::string line;
+    
     while (std::getline(myfile, line)) {
         std::string frameNum = line.substr(0, line.find(':'));
         int integerFrameNum = std::stoi(frameNum);
@@ -30,14 +27,12 @@ EventHandlerRead::EventHandlerRead(std::string pathToInputs) {
             inputsForFrame.insert(static_cast<InputType>(integerToken));
             inputs.erase(0, pos + delimiter.length());
         }
-        std::cout << inputs << std::endl;
 
         if (inputs.size() > 0) {
             integerToken = std::stoi(inputs);
 
             inputsForFrame.insert(static_cast<InputType>(integerToken));
         }
-
 
         std::pair<int, std::set<InputType>> input(integerFrameNum, inputsForFrame);
 
