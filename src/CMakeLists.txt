@@ -1,4 +1,4 @@
-target_sources(OrionEngine PRIVATE
+target_sources(OrionEngineLib PRIVATE
     main.cpp
     OptionsLoader.cpp
     EventHandlerWrite.cpp
@@ -14,4 +14,5 @@ target_sources(OrionEngine PRIVATE
     Utils.cpp
     glad.c
     Box.cpp
+    SecondOrderDynamics.cpp
 )

@@ -6,6 +6,7 @@
 #include "Timer.h"
 #include "Utils.h"
 #include "IOException.h"
+#include "SecondOrderDynamics.h"
 
 #include <iostream>
 
@@ -64,14 +65,13 @@ void OrionLoop::execute() {
         return;
     }
 
-	gl::setViewport(0, 0, 800, 600);
+	gl::setViewport(0, 0, 800, 800);
 	gl::setWindowResizeEvent(window);
 
 	int TICKS_PER_FRAME = 1000 / FPS;
 	bool hasController = false;
 	Camera* c = new Camera();
-	Box * b = new Box(0, 0, 500, 500, 2000, 2000, 222, 72, 31);
-	Box * b2 = new Box(600, 600, 300, 400, 2000, 2000, 165, 93, 201);
+	Box * b = new Box(0, 0, 135, 195, 2000, 2000, 222, 72, 31);
 	CollisionMap* collisionMap = new CollisionMap(2000, 2000, 107);
 
 	//Instantiate EntityManager
@@ -80,15 +80,21 @@ void OrionLoop::execute() {
 	//Add entities to entity manager
 	entityManager->addEntity(c);
 	entityManager->addEntity(b);
-	entityManager->addEntity(b2);
 
-	int simulationTime = 0;
+	double simulationTime = 0;
+	double physTime = 0;
     Timer timer;
 
 	bool quit = false;
 	unsigned int shaderProgram = gl::getShaderProgram(vertexShaderSource, fragmentShaderSource);
 
+	glEnable(GL_LINE_SMOOTH);
+	glfwSwapInterval(1);
+
+	std::cout << "DEBUG" << std::endl;
+
 	while (!gl::shouldWindowClose(window)) {
+		gl::pollEvents();
 		gl::processInput(window);
 		gl::setClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		gl::clearColorBuffer();
@@ -96,18 +102,42 @@ void OrionLoop::execute() {
         timer.start();
         int realTime = timer.getTime();
 
+		int tripsAroundTheSun = 0;
+
         while (simulationTime < realTime) {
+			int eventBefore = timer.getTime();
 			eventHandler->handleEvents(&quit, entityManager, window);
-			entityManager->handleStateChanges();
+
+			int eventAfter = timer.getTime() - eventBefore;
+
+			int handleBefore = timer.getTime();
+			entityManager->handleStateChanges(6.06);
+
+			int handleAfter = timer.getTime() - handleBefore;
+
+			int enactBefore = timer.getTime();
 			entityManager->enactStateChanges();
 			
-            simulationTime += 16;
+			int enactAfter = timer.getTime() - enactBefore;
+
+            simulationTime += 6.06;
+			tripsAroundTheSun++;
+
+			// if (simulationTime < realTime) {
+			// 	std::cout << "FRAME DROP " << eventAfter << ", " << handleAfter << ", " << enactAfter << ", " << simulationTime -16.67 << ", " << realTime << std::endl;
+			// }
         }
 
-        int frameTicks = timer.getTicks();
+		int showBefore = timer.getTime();
 		entityManager->showAll(shaderProgram);
+		int showAfter = timer.getTime() - showBefore;
+
+		int swapBefore = timer.getTime();
 		gl::swapBuffers(window);
-		gl::pollEvents();
+		int swapAfter = timer.getTime() - swapBefore;
+
+		//std::cout << "DEBUG: " << showAfter << ", " << swapAfter << std::endl;
+		
 	}
 
 	gl::terminate();
