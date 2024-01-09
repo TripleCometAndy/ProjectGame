@@ -13,12 +13,25 @@ Box::Box(double x, double y, unsigned int width, unsigned int height, unsigned i
     futureX = x;
     futureY = y;
 
+    realX = x;
+    realY = y;
+    settleX = x;
+    settleY = y;
+
+    futureRealX = x;
+    futureRealY = y;
+    futureSettleX = x;
+    futureSettleY = y;
+
     this->r = (1.0f/255)*r;
     this->g = (1.0f/255)*g;
     this->b = (1.0f/255)*b;
 
     this->virtualWidth = virtualWidth;
     this->virtualHeight = virtualHeight;
+
+    xDynamic = new SecondOrderDynamics(-0.3125, -0.3125, 1.875, x);
+    yDynamic = new SecondOrderDynamics(-0.3125, -0.3125, 1.875, y);
 
     transform = gl::createTransformationMatrix();
 
@@ -95,12 +108,25 @@ Box::Box(double x, double y, unsigned int width, unsigned int height, unsigned i
     glBindVertexArray(0); 
 }
 
-void Box::handleStateChanges(std::set<InputType>* currentInputs, std::set<JoystickInput *> * joystickInputs, CollisionMap * collisionMap) {
-    //Find joystick 1 and then break
+void Box::handleStateChanges(std::set<InputType>* currentInputs, std::set<JoystickInput *> * joystickInputs, CollisionMap * collisionMap, int dt) {
+    handleJoystickInput(joystickInputs, dt);
+
+    handleArrowKeyInput(currentInputs, dt);
+
+    futureX = xDynamic->update((double)dt/(double)1000, futureSettleX);
+    futureY = yDynamic->update((double)dt/(double)1000, futureSettleY);
+}
+
+void Box::handleJoystickInput(std::set<JoystickInput *> * joystickInputs, int dt) {
+    if (joystickInputs == NULL) {
+        return;
+    }
+
     double xJoy;
     double yJoy;
     double lengthJoy;
 
+    //Find joystick 1 and then break
     for (JoystickInput * joystickInput : *joystickInputs) {
         if (joystickInput->controllerNumber == 1) {
             xJoy = joystickInput->x;
@@ -111,36 +137,55 @@ void Box::handleStateChanges(std::set<InputType>* currentInputs, std::set<Joysti
                 double normalizedX = xJoy/lengthJoy;
                 double normalizedY = yJoy/lengthJoy;
 
-                double finalX = normalizedX * 4;
-                double finalY = normalizedY * 4;
+                double finalX = normalizedX * VELOCITY * dt;
+                double finalY = normalizedY * VELOCITY * dt;
 
-                futureX += finalX;
-                futureY -= finalY;
+                futureSettleX += finalX;
+                futureSettleY -= finalY;
+
+                xDynamic->setFZR(1, 1, -200);
+                yDynamic->setFZR(1, 1, -200);
             }
 
             break;
         }
     }
-    
+}
+
+void Box::handleArrowKeyInput(std::set<InputType>* currentInputs, int dt) {
+    if (currentInputs == NULL) {
+        return;
+    }
+
     if (currentInputs->find(InputType::UP_ARROW) != currentInputs->end()) {
-		futureY += 4;
+		futureSettleY += (VELOCITY * dt);
+
+        setDynamicForMovementWhileInput();
 	}
 	else if (currentInputs->find(InputType::LEFT_ARROW) != currentInputs->end()) {
-		futureX -= 4;
+		futureSettleX -= (VELOCITY * dt);
+
+        setDynamicForMovementWhileInput();
 	}
 	else if (currentInputs->find(InputType::RIGHT_ARROW) != currentInputs->end()) {
-		futureX += 4;
+		futureSettleX += (VELOCITY * dt);
+
+        setDynamicForMovementWhileInput();
 	}
 	else if (currentInputs->find(InputType::DOWN_ARROW) != currentInputs->end()) {
-		futureY -= 4;
-	}
+		futureSettleY -= (VELOCITY * dt);
 
-    Hitbox* futurePosition = new Hitbox();
-	futurePosition->x = futureX;
-	futurePosition->y = futureY;
-	futurePosition->width = width;
-	futurePosition->height = height;
-	futurePosition->parent = this;
+        setDynamicForMovementWhileInput();
+	}
+    else {
+        xDynamic->setFZR(-0.3125, -0.3125, 1.875);
+        yDynamic->setFZR(-0.3125, -0.3125, 1.875);
+    }
+}
+
+void Box::setDynamicForMovementWhileInput() {
+    xDynamic->setFZR(1, 1, 0);
+    yDynamic->setFZR(1, 1, 0);
 }
 
 void Box::enactStateChanges() {
@@ -155,6 +200,9 @@ void Box::enactStateChanges() {
 	x = futureX;
 	y = futureY;
 
+    settleX = futureSettleX;
+    settleY = futureSettleY;
+
 	for (Hitbox* hitbox : hitboxes) {
 		hitbox->x += differenceX;
 		hitbox->y += differenceY;
@@ -162,11 +210,40 @@ void Box::enactStateChanges() {
 }
 
 void Box::show(int shaderProgram) {
-    unsigned int transformLoc = glGetUniformLocation(shaderProgram, "transform");
-    int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
-    glUseProgram(shaderProgram);
+    //Cache the uniform locations. Significant speed loss if we continuously grab them
+    if (!doHaveUniformLocations) {
+        transformLoc = getUniformLocation(shaderProgram, "transform");
+        vertexColorLoc = getUniformLocation(shaderProgram, "ourColor");
+        doHaveUniformLocations = true;
+    }
+
+    useProgram(shaderProgram);
+    uniformMatrix4fv(transformLoc);
+    uniform4f(vertexColorLoc);
+    bindVertexArray();
+    drawElements();
+}
+
+int Box::getUniformLocation(int shaderProgram, std::string uniform) {
+    return glGetUniformLocation(shaderProgram, uniform.c_str());
+}
+
+void Box::useProgram(int program) {
+    glUseProgram(program);
+}
+
+void Box::uniformMatrix4fv(int transformLoc) {
     glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
+}
+
+void Box::uniform4f(int vertexColorLocation) {
     glUniform4f(vertexColorLocation, r, g, b, 1.0f);
+}
+
+void Box::bindVertexArray() {
     glBindVertexArray(VAO);
+}
+
+void Box::drawElements() {
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }

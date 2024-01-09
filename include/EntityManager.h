@@ -19,7 +19,7 @@ public:
 	void addEntity(OrionEntity* entity);
 	void showAll(int shaderProgram);
 	void setInputs(std::set<InputType>* events, std::set<JoystickInput *> * joystickInputs);
-	void handleStateChanges();
+	void handleStateChanges(int dt);
 	void enactStateChanges();
 	int getEntityX(std::string entityName);
 	int getEntityY(std::string entityName);

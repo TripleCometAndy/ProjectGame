@@ -9,6 +9,8 @@ include(FetchContent)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g")
+
 FetchContent_Declare(
 	glfw-stable
 	GIT_REPOSITORY https://github.com/TripleCometAndy/glfw-stable
@@ -25,19 +27,32 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(glm)
 
-add_executable(OrionEngine)
+add_library(OrionEngineLib)
 
-target_include_directories(OrionEngine PUBLIC
+target_include_directories(OrionEngineLib PUBLIC
     include
     src
 )
 
-target_link_libraries(OrionEngine glfw glm)
+target_link_libraries(OrionEngineLib glfw glm -static gcc stdc++ winpthread -dynamic)
 
 add_subdirectory(src)
 
 # Don't pull tests in to whoever uses our library
 if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+    add_executable(OrionEngine)
+
+    target_include_directories(OrionEngine PUBLIC
+        include
+        src
+    )
+
+    target_sources(OrionEngine PRIVATE
+        src/main.cpp
+    )
+
+    target_link_libraries(OrionEngine OrionEngineLib)
+
     enable_testing()
     add_subdirectory(test)
 endif()

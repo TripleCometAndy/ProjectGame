@@ -38,7 +38,7 @@ public:
 	double getY();
 	bool isCollidingWith(Hitbox* hitbox);
 
-	virtual void handleStateChanges(std::set<InputType>* currentInputs, std::set<JoystickInput *> * joystickInputs, CollisionMap * collisionMap) = 0;
+	virtual void handleStateChanges(std::set<InputType>* currentInputs, std::set<JoystickInput *> * joystickInputs, CollisionMap * collisionMap, int dt) = 0;
 	virtual void enactStateChanges() = 0;
 	virtual void show(int shaderProgram) = 0;
 };

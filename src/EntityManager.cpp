@@ -57,9 +57,9 @@ void EntityManager::setInputs(std::set<InputType>* events, std::set<JoystickInpu
 	this->currentJoystickInputs = joystickInputs;
 }
 
-void EntityManager::handleStateChanges() {
+void EntityManager::handleStateChanges(int dt) {
 	for (OrionEntity* entity : entities) {
-		entity->handleStateChanges(currentInputs, currentJoystickInputs, collisionMap);
+		entity->handleStateChanges(currentInputs, currentJoystickInputs, collisionMap, dt);
 	}
 }
 
